@@ -84,3 +84,34 @@ def test_no_product_for_seller(db):
 
     assert exc.value.status_code == 404
     assert exc.value.detail == "No product found for seller"
+
+def test_shipping_for_seller_success(db):
+    from app.models.seller import Seller
+    from app.models.product import Product
+
+    seller = Seller(id=1, name="S1", latitude=10, longitude=10)
+    warehouse = Warehouse(id=1, name="W1", latitude=10, longitude=10)
+    customer = Customer(id=1, name="C1", phone="123", latitude=11, longitude=11)
+
+    product = Product(
+        id=1,
+        name="Rice",
+        weight=5,
+        price=200,
+        seller_id=1,
+        is_fragile=False,
+        is_perishable=False
+    )
+
+    db.add_all([seller, warehouse, customer, product])
+    db.commit()
+
+    warehouse_result, charge = calculate_shipping_for_seller(
+        db=db,
+        seller_id=1,
+        customer_id=1,
+        delivery_speed="standard",
+    )
+
+    assert charge > 0
+    assert warehouse_result.id == 1

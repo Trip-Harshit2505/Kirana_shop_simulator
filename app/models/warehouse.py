@@ -9,3 +9,5 @@ class Warehouse(Base):
     name = Column(String, nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+
+    operational_status = Column(String, default="active")

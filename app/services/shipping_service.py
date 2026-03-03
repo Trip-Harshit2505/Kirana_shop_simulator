@@ -65,6 +65,12 @@ def calculate_shipping_for_seller(
 
     if not product:
         raise HTTPException(status_code=404, detail="No product found for seller")
+    
+    if product.is_perishable and delivery_speed != "express":
+        raise HTTPException(
+            status_code=400,
+            detail="Perishable products require express delivery"
+        )
 
     warehouse = get_nearest_warehouse(db, seller_id)
 
@@ -75,5 +81,7 @@ def calculate_shipping_for_seller(
         delivery_speed=delivery_speed,
         weight=product.weight,
     )
+    if product.is_fragile:
+        shipping_charge += 5
 
     return warehouse, shipping_charge

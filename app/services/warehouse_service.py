@@ -17,7 +17,9 @@ def get_nearest_warehouse(db: Session, seller_id: int):
     if not seller:
         raise HTTPException(status_code=404, detail="Seller not found")
 
-    warehouses = db.query(Warehouse).all()
+    warehouses = db.query(Warehouse).filter(
+        Warehouse.operational_status == "active"
+    ).all()
     if not warehouses:
         raise HTTPException(status_code=404, detail="No warehouses available")
 
