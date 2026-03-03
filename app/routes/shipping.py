@@ -11,7 +11,9 @@ from app.services.shipping_service import calculate_shipping_for_seller
 
 router = APIRouter(prefix="/api/v1", tags=["Shipping"])
 
+# Shipping API Endpoints:
 
+# 1. GET /shipping-charge: Calculate shipping charge based on warehouse, customer, delivery
 @router.get("/shipping-charge", response_model=ShippingChargeResponse)
 def get_shipping_charge(
     warehouseId: int,
@@ -35,6 +37,8 @@ def get_shipping_charge(
     "/shipping-charge/calculate",
     response_model=ShippingCalculateResponse,
 )
+
+# 2. POST /shipping-charge/calculate: Calculate shipping charge based on seller, customer, and delivery speed, and also return nearest warehouse information.
 def calculate_combined_shipping(
     request: ShippingCalculateRequest,
     db: Session = Depends(get_db),

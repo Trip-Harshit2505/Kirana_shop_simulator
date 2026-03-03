@@ -8,14 +8,17 @@ from app.services.transport_strategy import get_transport_strategy
 from app.services.warehouse_service import get_nearest_warehouse
 from app.core.cache import cache
 
-
+# Business Logic:
+# 1. Shipping charge is calculated based on distance, weight, and delivery speed.
+# 2. We use a strategy pattern to determine the transport method based on distance.
 def calculate_shipping(
     db: Session,
     warehouse_id: int,
     customer_id: int,
     delivery_speed: str,
     weight: float,
-):
+):  
+    # Caching key based on input parameters
     cache_key = f"shipping:{warehouse_id}:{customer_id}:{delivery_speed}:{weight}"
     cached = cache.get(cache_key)
 
@@ -37,6 +40,7 @@ def calculate_shipping(
         customer.longitude,
     )
 
+    # Determine transport strategy based on distance
     strategy = get_transport_strategy(distance)
     base_charge = strategy.calculate(distance, weight)
 
@@ -51,6 +55,10 @@ def calculate_shipping(
 
     return final_charge
 
+# Business Logic:
+# 1. For seller-based shipping calculation, we first find the nearest warehouse to the seller.
+# 2. We then calculate the shipping charge based on the product's weight and delivery speed.
+# 3. If the product is fragile, we add an additional charge.
 def calculate_shipping_for_seller(
     db: Session,
     seller_id: int,
@@ -66,6 +74,7 @@ def calculate_shipping_for_seller(
     if not product:
         raise HTTPException(status_code=404, detail="No product found for seller")
     
+    # Business Rule: Perishable products must use express delivery
     if product.is_perishable and delivery_speed != "express":
         raise HTTPException(
             status_code=400,
@@ -81,6 +90,7 @@ def calculate_shipping_for_seller(
         delivery_speed=delivery_speed,
         weight=product.weight,
     )
+    # Business Rule: Fragile items incur an additional charge
     if product.is_fragile:
         shipping_charge += 5
 

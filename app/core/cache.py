@@ -1,5 +1,8 @@
 import time
 
+# Simple in-memory cache implementation
+
+# This cache is used to store results of expensive operations like finding the nearest warehouse or calculating shipping charges. It uses a dictionary to store values along with their expiry time. The `get` method checks if the key exists and if it has not expired before returning the value. The `set` method allows storing a value with an optional time-to-live (TTL) after which the value will be considered expired and removed from the cache. This helps improve performance by avoiding redundant calculations for frequently accessed data.
 
 class SimpleCache:
     def __init__(self):

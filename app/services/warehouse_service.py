@@ -5,8 +5,12 @@ from app.utils.distance import calculate_distance
 from fastapi import HTTPException
 from app.core.cache import cache
 
-
+# Business Logic:
+# 1. For seller-based shipping calculation, we first find the nearest warehouse to the seller.
+# 2. We then calculate the shipping charge based on the product's weight and delivery speed.
 def get_nearest_warehouse(db: Session, seller_id: int):
+
+    # Caching key based on seller_id
     cache_key = f"nearest_warehouse:{seller_id}"
     cached = cache.get(cache_key)
 
@@ -23,8 +27,9 @@ def get_nearest_warehouse(db: Session, seller_id: int):
     if not warehouses:
         raise HTTPException(status_code=404, detail="No warehouses available")
 
+    # Finding the nearest warehouse to the seller
     nearest = None
-    min_distance = float("inf")
+    min_distance = float("inf") # Initialize with infinity to find the minimum
 
     for warehouse in warehouses:
         distance = calculate_distance(

@@ -5,6 +5,7 @@ from app.models.warehouse import Warehouse
 from app.services.shipping_service import calculate_shipping
 from app.core.cache import cache
 
+# Test cases for caching functionality in warehouse_service and shipping_service
 
 def test_cache_set_and_get():
     cache = SimpleCache()
